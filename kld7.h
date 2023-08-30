@@ -5,6 +5,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "radarevent.h"
 
 namespace esphome {
@@ -15,23 +16,21 @@ const float DETECTION_SPEED_DIFFERENCE = 12.5;
 const int PROCESS_MIN_POINTS = 5;
 const int REQUEST_INTERVAL = 100;
 
-class Kld7Sensor : public Component, public sensor::Sensor {
- public:
-  //Kld7Sensor(){};
-  //void publish_raw_event(const RawRadarEvent &raw){};
-  //void publish_processed_event(const ProcessedRadarEvent &processed) {};
-};
+class Sensor : public Component, public sensor::Sensor {};
+class BinarySensor : public Component, public binary_sensor::BinarySensor {};
 
 class Kld7 : public Component, public uart::UARTDevice {
  public:
   Kld7() {};
-  void register_speed_sensor(Kld7Sensor* sensor) { this->_speed_sensors.emplace_back(sensor); };
-  void register_raw_speed_sensor(Kld7Sensor* sensor) { this->_raw_speed_sensors.emplace_back(sensor); };
+  void register_speed_sensor(Sensor* sensor) { this->_speed_sensors.emplace_back(sensor); };
+  void register_raw_speed_sensor(Sensor* sensor) { this->_raw_speed_sensors.emplace_back(sensor); };
+  void register_detection_sensor(BinarySensor* sensor) { this->_detection_sensors.emplace_back(sensor); };
   void loop() override;
   void setup() override;
   void dump_config() override;
-  std::vector<Kld7Sensor*> _speed_sensors;
-  std::vector<Kld7Sensor*> _raw_speed_sensors;
+  std::vector<Sensor*> _speed_sensors;
+  std::vector<Sensor*> _raw_speed_sensors;
+  std::vector<BinarySensor*> _detection_sensors;
 
 
  private:

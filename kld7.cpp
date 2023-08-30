@@ -100,6 +100,7 @@ void Kld7::loop() {
 			 } else {
 				//ESP_LOGD(TAG, "Raw data: No detection");
 			 }
+			 for(auto s: _detection_sensors) { s->publish_state(_last_raw.detection);}
 			_process_detection();
 			_waiting_for_data = false;
 		} else {
