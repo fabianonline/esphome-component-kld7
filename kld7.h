@@ -22,16 +22,18 @@ class BinarySensor : public Component, public binary_sensor::BinarySensor {};
 class Kld7 : public Component, public uart::UARTDevice {
  public:
   Kld7() {};
-  void register_speed_sensor(Sensor* sensor) { this->_speed_sensors.emplace_back(sensor); };
-  void register_raw_speed_sensor(Sensor* sensor) { this->_raw_speed_sensors.emplace_back(sensor); };
-  void register_detection_sensor(BinarySensor* sensor) { this->_detection_sensors.emplace_back(sensor); };
+  void register_speed_sensor(sensor::Sensor* sensor) { this->_speed_sensor = sensor; };
+  void register_raw_speed_sensor(sensor::Sensor* sensor) { this->_raw_speed_sensor = sensor; };
+  void register_raw_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_detection_sensor = sensor; };
+  void register_raw_direction_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_direction_sensor = sensor; };
+
   void loop() override;
   void setup() override;
   void dump_config() override;
-  std::vector<Sensor*> _speed_sensors;
-  std::vector<Sensor*> _raw_speed_sensors;
-  std::vector<BinarySensor*> _detection_sensors;
-
+  sensor::Sensor* _speed_sensor = NULL;
+  sensor::Sensor* _raw_speed_sensor = NULL;
+  binary_sensor::BinarySensor* _raw_detection_sensor = NULL;
+  binary_sensor::BinarySensor* _raw_direction_sensor = NULL;
 
  private:
   RawRadarEvent _last_raw;
