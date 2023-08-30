@@ -6,8 +6,6 @@ namespace kld7 {
 	
 static const char* TAG = "KLD7";
 
-Kld7Listener::Kld7Listener(std::string server_id, std::string type) : server_id(std::move(server_id)), type(std::move(type)) {};
-
 void Kld7::setup() {
 	ESP_LOGI(TAG, "Starting initialization of K-LD7...");
 	ESP_LOGD(TAG, "Sending INIT");
@@ -98,9 +96,7 @@ void Kld7::loop() {
 			_last_raw = RawRadarEvent(payload, length);
 			if (_last_raw.detection) {
 				ESP_LOGD(TAG, "Raw data: %d cm, %.1f km/h, %.1f°, %.1fdB", _last_raw.distance, _last_raw.speed, _last_raw.angle, _last_raw.magnitude);
-				if (_raw_speed_sensor != NULL) {
-					_raw_speed_sensor->publish_state(_last_raw.speed);
-				}
+				for(auto s: _raw_speed_sensors) { s->publish_state(_last_raw.speed); }
 			 } else {
 				//ESP_LOGD(TAG, "Raw data: No detection");
 			 }
@@ -148,11 +144,9 @@ void Kld7::_process_detection() {
 void Kld7::_finish_processing() {
 	_current_process.active = false;
 	if (_current_process.points > PROCESS_MIN_POINTS) {
-		_current_process.avg_speed = _current_process.speed_sum / _current_process.points;
-		if (_speed_sensor != NULL) {
-			_speed_sensor->publish_state(_current_process.avg_speed);
-		}
-		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, _current_process.avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
+		float avg_speed = _current_process.speed_sum / _current_process.points;
+		for(auto s : _speed_sensors) s->publish_state(avg_speed);
+		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
 	} else {
 		ESP_LOGD(TAG, "_finish_processing: Too little data. Ignoring event.");
 	}
