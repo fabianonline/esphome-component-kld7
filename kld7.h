@@ -14,7 +14,7 @@ namespace kld7 {
 const int DETECTION_TIMEOUT = 1000;
 const float DETECTION_SPEED_DIFFERENCE = 12.5;
 const int PROCESS_MIN_POINTS = 5;
-const int REQUEST_INTERVAL = 100;
+const int REQUEST_INTERVAL = 50;
 
 class Sensor : public Component, public sensor::Sensor {};
 class BinarySensor : public Component, public binary_sensor::BinarySensor {};
@@ -23,17 +23,45 @@ class Kld7 : public Component, public uart::UARTDevice {
  public:
   Kld7() {};
   void register_speed_sensor(sensor::Sensor* sensor) { this->_speed_sensor = sensor; };
+  void register_max_speed_sensor(sensor::Sensor* sensor) { this->_max_speed_sensor = sensor; };
   void register_raw_speed_sensor(sensor::Sensor* sensor) { this->_raw_speed_sensor = sensor; };
+  void register_points_sensor(sensor::Sensor* sensor) { this->_points_sensor = sensor; }
+  void register_raw_angle_sensor(sensor::Sensor* sensor) { this->_raw_angle_sensor = sensor; }
+  void register_raw_distance_sensor(sensor::Sensor* sensor) { this->_raw_distance_sensor = sensor; }
+
   void register_raw_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_detection_sensor = sensor; };
   void register_raw_direction_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_direction_sensor = sensor; };
+  void register_filtered_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_filtered_detection_sensor = sensor; };
+
+  void set_filtered_detection_sensor_min_distance(uint16_t value) { _filtered_sensor_min_distance = value; };
+  void set_filtered_detection_sensor_max_distance(uint16_t value) { _filtered_sensor_max_distance = value; };
+  void set_filtered_detection_sensor_min_angle(float value) { _filtered_sensor_min_angle = value; };
+  void set_filtered_detection_sensor_max_angle(float value) { _filtered_sensor_max_angle = value; };
+  void set_filtered_detection_sensor_min_points(uint16_t value) { _filtered_sensor_min_points = value; };
+  void set_filtered_detection_sensor_timeout(uint16_t value) { _filtered_sensor_timeout = value; };
 
   void loop() override;
   void setup() override;
   void dump_config() override;
   sensor::Sensor* _speed_sensor = NULL;
+  sensor::Sensor* _max_speed_sensor = NULL;
   sensor::Sensor* _raw_speed_sensor = NULL;
+  sensor::Sensor* _points_sensor = NULL;
+  sensor::Sensor* _raw_angle_sensor = NULL;
+  sensor::Sensor* _raw_distance_sensor = NULL;
+  uint16_t _filtered_sensor_min_distance = 0;
+  uint16_t _filtered_sensor_max_distance = 3000;
+  float _filtered_sensor_min_angle = -90.0;
+  float _filtered_sensor_max_angle = 90.0;
+  uint16_t _filtered_sensor_timeout = 1000;
+  uint16_t _filtered_sensor_min_points = 5;
+
   binary_sensor::BinarySensor* _raw_detection_sensor = NULL;
   binary_sensor::BinarySensor* _raw_direction_sensor = NULL;
+  binary_sensor::BinarySensor* _filtered_detection_sensor = NULL;
+
+  uint16_t _filtered_sensor_points = 0;
+  unsigned long long _filtered_sensor_last_ts = 0;
 
  private:
   RawRadarEvent _last_raw;

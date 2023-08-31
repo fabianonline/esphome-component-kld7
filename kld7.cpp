@@ -97,11 +97,30 @@ void Kld7::loop() {
 			if (_last_raw.detection) {
 				//ESP_LOGD(TAG, "Raw data: %d cm, %.1f km/h, %.1f°, %.1fdB", _last_raw.distance, _last_raw.speed, _last_raw.angle, _last_raw.magnitude);
 				if (_raw_speed_sensor != NULL) _raw_speed_sensor->publish_state(_last_raw.speed);
+				if (_raw_angle_sensor != NULL) _raw_angle_sensor->publish_state(_last_raw.angle);
+				if (_raw_distance_sensor != NULL) _raw_distance_sensor->publish_state(_last_raw.distance);
 			 } else {
 				//ESP_LOGD(TAG, "Raw data: No detection");
 			 }
 			 if (_raw_detection_sensor != NULL) _raw_detection_sensor->publish_state(_last_raw.detection);
 			 if (_raw_direction_sensor != NULL) _raw_direction_sensor->publish_state(_last_raw.speed > 0);
+			 if (_filtered_detection_sensor != NULL) {
+				if (_last_raw.detection &&
+					_last_raw.angle >= _filtered_sensor_min_angle && _last_raw.angle <= _filtered_sensor_max_angle &&
+					_last_raw.distance >= _filtered_sensor_min_distance && _last_raw.distance <= _filtered_sensor_max_distance)
+				{
+					_filtered_sensor_points++;
+					_filtered_sensor_last_ts = millis();
+					if (_filtered_sensor_points >= _filtered_sensor_min_points) {
+						_filtered_detection_sensor->publish_state(true);
+					}
+				} else {
+					if (_filtered_sensor_last_ts > millis() || _filtered_sensor_last_ts < millis() - _filtered_sensor_timeout) {
+						_filtered_sensor_points = 0;
+						_filtered_detection_sensor->publish_state(false);
+					}
+				}
+			 }
 			_process_detection();
 			_waiting_for_data = false;
 		} else {
@@ -148,6 +167,8 @@ void Kld7::_finish_processing() {
 	if (_current_process.points > PROCESS_MIN_POINTS) {
 		float avg_speed = _current_process.speed_sum / _current_process.points;
 		if (_speed_sensor != NULL) _speed_sensor->publish_state(avg_speed);
+		if (_points_sensor != NULL) _points_sensor->publish_state(_current_process.points);
+		if (_max_speed_sensor != NULL) _max_speed_sensor->publish_state(_current_process.not_max_speed);
 		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
 	} else {
 		ESP_LOGD(TAG, "_finish_processing: Too little data. Ignoring event.");
