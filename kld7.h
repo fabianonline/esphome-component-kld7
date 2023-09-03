@@ -6,6 +6,7 @@
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include "radarevent.h"
 
 namespace esphome {
@@ -18,6 +19,7 @@ const int REQUEST_INTERVAL = 50;
 
 class Sensor : public Component, public sensor::Sensor {};
 class BinarySensor : public Component, public binary_sensor::BinarySensor {};
+class TextSensor : public Component, public text_sensor::TextSensor {};
 
 class Kld7 : public Component, public uart::UARTDevice {
  public:
@@ -32,6 +34,8 @@ class Kld7 : public Component, public uart::UARTDevice {
   void register_raw_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_detection_sensor = sensor; };
   void register_raw_direction_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_direction_sensor = sensor; };
   void register_filtered_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_filtered_detection_sensor = sensor; };
+  void register_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_detection_sensor = sensor; };
+
 
   void set_filtered_detection_sensor_min_distance(uint16_t value) { _filtered_sensor_min_distance = value; };
   void set_filtered_detection_sensor_max_distance(uint16_t value) { _filtered_sensor_max_distance = value; };
@@ -39,6 +43,9 @@ class Kld7 : public Component, public uart::UARTDevice {
   void set_filtered_detection_sensor_max_angle(float value) { _filtered_sensor_max_angle = value; };
   void set_filtered_detection_sensor_min_points(uint16_t value) { _filtered_sensor_min_points = value; };
   void set_filtered_detection_sensor_timeout(uint16_t value) { _filtered_sensor_timeout = value; };
+
+  void register_raw_json_sensor(text_sensor::TextSensor* sensor) { this->_raw_json_sensor = sensor; }
+  void register_json_sensor(text_sensor::TextSensor* sensor) { this->_json_sensor = sensor; }
 
   void loop() override;
   void setup() override;
@@ -57,8 +64,12 @@ class Kld7 : public Component, public uart::UARTDevice {
   uint16_t _filtered_sensor_min_points = 5;
 
   binary_sensor::BinarySensor* _raw_detection_sensor = NULL;
+  binary_sensor::BinarySensor* _detection_sensor = NULL;
   binary_sensor::BinarySensor* _raw_direction_sensor = NULL;
   binary_sensor::BinarySensor* _filtered_detection_sensor = NULL;
+
+  text_sensor::TextSensor* _raw_json_sensor = NULL;
+  text_sensor::TextSensor* _json_sensor = NULL;
 
   uint16_t _filtered_sensor_points = 0;
   unsigned long long _filtered_sensor_last_ts = 0;

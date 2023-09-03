@@ -99,6 +99,11 @@ void Kld7::loop() {
 				if (_raw_speed_sensor != NULL) _raw_speed_sensor->publish_state(_last_raw.speed);
 				if (_raw_angle_sensor != NULL) _raw_angle_sensor->publish_state(_last_raw.angle);
 				if (_raw_distance_sensor != NULL) _raw_distance_sensor->publish_state(_last_raw.distance);
+				if (_raw_json_sensor != NULL) {
+					char buff[64];
+  					snprintf(buff, sizeof(buff), "{\"speed\":%.1f,\"angle\":%.1f,\"distance\":%d}", _last_raw.speed, _last_raw.angle, _last_raw.distance);
+					_raw_json_sensor->publish_state(buff);
+				}
 			 } else {
 				//ESP_LOGD(TAG, "Raw data: No detection");
 			 }
@@ -169,11 +174,18 @@ void Kld7::_finish_processing() {
 		if (_speed_sensor != NULL) _speed_sensor->publish_state(avg_speed);
 		if (_points_sensor != NULL) _points_sensor->publish_state(_current_process.points);
 		if (_max_speed_sensor != NULL) _max_speed_sensor->publish_state(_current_process.not_max_speed);
+		if (_detection_sensor != NULL) _detection_sensor->publish_state(true);
+		if (_json_sensor != NULL) {
+			char buffer[64];
+			snprintf(buffer, sizeof(buffer), "{\"speed\":%.1f,\"max_speed\":%.1f,\"points\":%d}", avg_speed, _current_process.not_max_speed, _current_process.points);
+			_json_sensor->publish_state(buffer);
+		}
 		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
 	} else {
 		ESP_LOGD(TAG, "_finish_processing: Too little data. Ignoring event.");
 	}
 	_current_process = ProcessedRadarEvent();
+	if (_detection_sensor != NULL) _detection_sensor->publish_state(false);
 }
 void Kld7::dump_config() { 
 	ESP_LOGCONFIG(TAG, "KLD7:"); 
