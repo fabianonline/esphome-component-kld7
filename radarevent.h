@@ -6,9 +6,15 @@
 #include <vector>
 #include "esphome/components/uart/uart.h"
 
+
 namespace esphome {
 namespace kld7 {
+
+	class Kld7;
+	
 	class RawRadarEvent {
+		private:
+		const char* TAG = "RawRadarEvent";
 		public:
 		RawRadarEvent() {};
 		RawRadarEvent(uint8_t* data, uint32_t length);
@@ -21,6 +27,8 @@ namespace kld7 {
 	};
 
 	class ProcessedRadarEvent {
+		private:
+		const char* TAG = "ProcessedRadarEvent";
 		public:
 		uint16_t points = 0;
 		bool active = false;

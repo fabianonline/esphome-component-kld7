@@ -99,6 +99,7 @@ void Kld7::loop() {
 				if (_raw_speed_sensor != NULL) _raw_speed_sensor->publish_state(_last_raw.speed);
 				if (_raw_angle_sensor != NULL) _raw_angle_sensor->publish_state(_last_raw.angle);
 				if (_raw_distance_sensor != NULL) _raw_distance_sensor->publish_state(_last_raw.distance);
+				if (_raw_direction_sensor != NULL) _raw_direction_sensor->publish_state(_last_raw.speed > 0);
 				if (_raw_json_sensor != NULL) {
 					char buff[64];
   					snprintf(buff, sizeof(buff), "{\"speed\":%.1f,\"angle\":%.1f,\"distance\":%d}", _last_raw.speed, _last_raw.angle, _last_raw.distance);
@@ -108,7 +109,7 @@ void Kld7::loop() {
 				//ESP_LOGD(TAG, "Raw data: No detection");
 			 }
 			 if (_raw_detection_sensor != NULL) _raw_detection_sensor->publish_state(_last_raw.detection);
-			 if (_raw_direction_sensor != NULL) _raw_direction_sensor->publish_state(_last_raw.speed > 0);
+			 
 			 if (_filtered_detection_sensor != NULL) {
 				if (_last_raw.detection &&
 					_last_raw.angle >= _filtered_sensor_min_angle && _last_raw.angle <= _filtered_sensor_max_angle &&
@@ -155,13 +156,13 @@ void Kld7::_process_detection() {
 		_current_process.points++;
 		_current_process.direction_away_from_radar = direction_away_from_radar;
 		_current_process.last_speed = _last_raw.speed;
-		float speed = fabs(_last_raw.speed);
-		_current_process.speed_sum += speed;
-		if (speed > _current_process.max_speed) {
+		float abs_speed = fabs(_last_raw.speed);
+		_current_process.speed_sum += _last_raw.speed;
+		if (abs_speed > fabs(_current_process.max_speed)) {
 			_current_process.not_max_speed = _current_process.max_speed;
-			_current_process.max_speed = speed;
-		} else if (speed > _current_process.not_max_speed) {
-			_current_process.not_max_speed = speed;
+			_current_process.max_speed = _last_raw.speed;
+		} else if (abs_speed > fabs(_current_process.not_max_speed)) {
+			_current_process.not_max_speed = _last_raw.speed;
 		}
 	}
 	_previous_raw = _last_raw;
