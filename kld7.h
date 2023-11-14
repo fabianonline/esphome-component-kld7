@@ -47,9 +47,12 @@ class Kld7 : public Component, public uart::UARTDevice {
   void register_raw_json_sensor(text_sensor::TextSensor* sensor) { this->_raw_json_sensor = sensor; }
   void register_json_sensor(text_sensor::TextSensor* sensor) { this->_json_sensor = sensor; }
 
+  void set_invert_angle(boolean invert) { this->_invert_angle = invert; }
+
   void loop() override;
   void setup() override;
   void dump_config() override;
+  boolean _invert_angle = false;
   sensor::Sensor* _speed_sensor = NULL;
   sensor::Sensor* _max_speed_sensor = NULL;
   sensor::Sensor* _raw_speed_sensor = NULL;

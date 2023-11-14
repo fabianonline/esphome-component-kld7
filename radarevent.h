@@ -17,7 +17,7 @@ namespace kld7 {
 		const char* TAG = "RawRadarEvent";
 		public:
 		RawRadarEvent() {};
-		RawRadarEvent(uint8_t* data, uint32_t length);
+		RawRadarEvent(uint8_t* data, uint32_t length, bool invert_angle);
 		bool detection = false;
 		uint16_t distance;
 		float speed;

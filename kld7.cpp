@@ -93,7 +93,7 @@ void Kld7::loop() {
 				ESP_LOGE(TAG, "Received TDAT with wrong payload length (expected: 0 or 8, was: %d)", length);
 				return;
 			}
-			_last_raw = RawRadarEvent(payload, length);
+			_last_raw = RawRadarEvent(payload, length, this->_invert_angle);
 			if (_last_raw.detection) {
 				//ESP_LOGD(TAG, "Raw data: %d cm, %.1f km/h, %.1f°, %.1fdB", _last_raw.distance, _last_raw.speed, _last_raw.angle, _last_raw.magnitude);
 				if (_raw_speed_sensor != NULL) _raw_speed_sensor->publish_state(_last_raw.speed);
