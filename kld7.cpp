@@ -18,7 +18,7 @@ void Kld7::setup() {
 	write_array((std::array<uint8_t, 12>){'R', 'R', 'A', 'I', 0x04, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00}); // Maximum range = 30m
 	_wait_for_ok();
 	ESP_LOGD(TAG, "Sending THOF");
-	write_array((std::array<uint8_t, 12>){'T', 'H', 'O', 'F', 0x04, 0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00}); // Threshold offset = 20dB
+	write_array((std::array<uint8_t, 12>){'T', 'H', 'O', 'F', 0x04, 0x00, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00}); // Threshold offset = 10dB
 	_wait_for_ok();
 	ESP_LOGD(TAG, "Sending TRFT");
 	write_array((std::array<uint8_t, 12>){'T', 'R', 'F', 'T', 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00}); // Tracking filter type = Fast detection
