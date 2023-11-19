@@ -25,7 +25,7 @@ class Kld7 : public Component, public uart::UARTDevice {
  public:
   Kld7() {};
   void register_speed_sensor(sensor::Sensor* sensor) { this->_speed_sensor = sensor; };
-  void register_max_speed_sensor(sensor::Sensor* sensor) { this->_max_speed_sensor = sensor; };
+  void register_avg_speed_sensor(sensor::Sensor* sensor) { this->_avg_speed_sensor = sensor; };
   void register_raw_speed_sensor(sensor::Sensor* sensor) { this->_raw_speed_sensor = sensor; };
   void register_points_sensor(sensor::Sensor* sensor) { this->_points_sensor = sensor; }
   void register_raw_angle_sensor(sensor::Sensor* sensor) { this->_raw_angle_sensor = sensor; }
@@ -54,7 +54,7 @@ class Kld7 : public Component, public uart::UARTDevice {
   void dump_config() override;
   boolean _invert_angle = false;
   sensor::Sensor* _speed_sensor = NULL;
-  sensor::Sensor* _max_speed_sensor = NULL;
+  sensor::Sensor* _avg_speed_sensor = NULL;
   sensor::Sensor* _raw_speed_sensor = NULL;
   sensor::Sensor* _points_sensor = NULL;
   sensor::Sensor* _raw_angle_sensor = NULL;

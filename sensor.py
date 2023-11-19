@@ -9,7 +9,7 @@ from . import CONF_KLD7_ID, kld7_ns, Kld7
 AUTO_LOAD = ["kld7"]
 CONF_TYPE_SPEED = "speed"
 CONF_TYPE_RAW_SPEED = "raw_speed"
-CONF_TYPE_MAX_SPEED = "max_speed"
+CONF_TYPE_AVG_SPEED = "avg_speed"
 CONF_TYPE_POINTS = "points"
 CONF_TYPE_RAW_ANGLE = "raw_angle"
 CONF_TYPE_RAW_DISTANCE = "raw_distance"
@@ -27,7 +27,7 @@ CONFIG_SCHEMA = sensor.sensor_schema().extend(
             state_class=STATE_CLASS_MEASUREMENT,
             device_class=DEVICE_CLASS_SPEED
 		),
-        cv.Optional(CONF_TYPE_MAX_SPEED): sensor.sensor_schema(
+        cv.Optional(CONF_TYPE_AVG_SPEED): sensor.sensor_schema(
             unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
             accuracy_decimals=1,
             state_class=STATE_CLASS_MEASUREMENT,
@@ -71,9 +71,9 @@ async def to_code(config):
     if sensor_config := config.get(CONF_TYPE_RAW_SPEED):
         sens = await sensor.new_sensor(sensor_config)
         cg.add(kld7.register_raw_speed_sensor(sens))
-    if sensor_config := config.get(CONF_TYPE_MAX_SPEED):
+    if sensor_config := config.get(CONF_TYPE_AVG_SPEED):
         sens = await sensor.new_sensor(sensor_config)
-        cg.add(kld7.register_max_speed_sensor(sens))
+        cg.add(kld7.register_avg_speed_sensor(sens))
     if sensor_config := config.get(CONF_TYPE_POINTS):
         sens = await sensor.new_sensor(sensor_config)
         cg.add(kld7.register_points_sensor(sens))

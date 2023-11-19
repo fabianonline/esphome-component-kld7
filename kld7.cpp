@@ -172,13 +172,13 @@ void Kld7::_finish_processing() {
 	_current_process.active = false;
 	if (_current_process.points > PROCESS_MIN_POINTS) {
 		float avg_speed = _current_process.speed_sum / _current_process.points;
-		if (_speed_sensor != NULL) _speed_sensor->publish_state(avg_speed);
+		if (_avg_speed_sensor != NULL) _avg_speed_sensor->publish_state(avg_speed);
 		if (_points_sensor != NULL) _points_sensor->publish_state(_current_process.points);
-		if (_max_speed_sensor != NULL) _max_speed_sensor->publish_state(_current_process.not_max_speed);
+		if (_speed_sensor != NULL) _speed_sensor->publish_state(_current_process.not_max_speed);
 		if (_detection_sensor != NULL) _detection_sensor->publish_state(true);
 		if (_json_sensor != NULL) {
 			char buffer[64];
-			snprintf(buffer, sizeof(buffer), "{\"speed\":%.1f,\"max_speed\":%.1f,\"points\":%d}", avg_speed, _current_process.not_max_speed, _current_process.points);
+			snprintf(buffer, sizeof(buffer), "{\"speed\":%.1f,\"avg_speed\":%.1f,\"points\":%d}", _current_process.not_max_speed, avg_speed, _current_process.points);
 			_json_sensor->publish_state(buffer);
 		}
 		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
