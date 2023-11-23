@@ -109,7 +109,7 @@ void Kld7::loop() {
 				if (_raw_direction_sensor != NULL) _raw_direction_sensor->publish_state(_last_raw.speed > 0);
 				if (_raw_json_sensor != NULL) {
 					char buff[64];
-  					snprintf(buff, sizeof(buff), "{\"speed\":%.1f,\"angle\":%.1f,\"distance\":%d}", _last_raw.speed, _last_raw.angle, _last_raw.distance);
+					snprintf(buff, sizeof(buff), "{\"speed\":%.1f,\"angle\":%.1f,\"distance\":%d,\"magnitude\":%.1f}", _last_raw.speed, _last_raw.angle, _last_raw.distance, _last_raw.magnitude);
 					_raw_json_sensor->publish_state(buff);
 				}
 			 } else {
