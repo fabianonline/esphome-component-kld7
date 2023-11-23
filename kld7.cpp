@@ -152,7 +152,8 @@ void Kld7::_process_detection() {
 		bool direction_away_from_radar = _last_raw.speed > 0;
 		if (_current_process.timestamp > millis() || millis() - _current_process.timestamp > DETECTION_TIMEOUT ||
 			direction_away_from_radar != _current_process.direction_away_from_radar ||
-			fabs(_last_raw.speed - _current_process.last_speed)>DETECTION_SPEED_DIFFERENCE) {
+			fabs(_last_raw.speed - _current_process.last_speed)>DETECTION_SPEED_DIFFERENCE ||
+			abs(_last_raw.distance - _current_process.last_distance)>DETECTION_DISTANCE_DIFFERENCE) {
 			// Finish detection and start a new one
 			_finish_processing();
 		}
@@ -163,6 +164,7 @@ void Kld7::_process_detection() {
 		_current_process.points++;
 		_current_process.direction_away_from_radar = direction_away_from_radar;
 		_current_process.last_speed = _last_raw.speed;
+		_current_process.last_distance = _last_raw.distance;
 		float abs_speed = fabs(_last_raw.speed);
 		_current_process.speed_sum += _last_raw.speed;
 		if (abs_speed > fabs(_current_process.max_speed)) {

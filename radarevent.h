@@ -39,6 +39,7 @@ namespace kld7 {
 		bool direction_away_from_radar;
 		unsigned long long timestamp;
 		float last_speed;
+		uint16_t last_distance;
 	};
 
 
