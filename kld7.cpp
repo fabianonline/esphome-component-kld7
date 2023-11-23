@@ -55,12 +55,19 @@ bool Kld7::_wait_for_ok() {
 	}
 }
 
+void Kld7::_request_data() {
+	write_array((std::array<uint8_t, 12>){'G', 'N', 'F', 'D', 0x04, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00});
+	_waiting_for_data = true;
+	_last_request = millis();
+}
+
 void Kld7::loop() {
 	if (_waiting_for_data == false && (_last_request > millis() || _last_request + REQUEST_INTERVAL < millis())) {
 		//ESP_LOGD(TAG, "Sending GNFD");
-		write_array((std::array<uint8_t, 12>){'G', 'N', 'F', 'D', 0x04, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00});
-		_waiting_for_data = true;
-		_last_request = millis();
+		_request_data();
+	} else if (_waiting_for_data && (_last_request > millis() || _last_request + TIMEOUT_INTERVAL < millis())) {
+		ESP_LOGW(TAG, "Received no data. Sending another request.");
+		_request_data();
 	}
 	if (available() >= 8) {
 		uint8_t head[8];

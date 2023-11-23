@@ -16,6 +16,7 @@ const int DETECTION_TIMEOUT = 1000;
 const float DETECTION_SPEED_DIFFERENCE = 12.5;
 const int PROCESS_MIN_POINTS = 5;
 const int REQUEST_INTERVAL = 50;
+const int TIMEOUT_INTERVAL = 500;
 
 class Sensor : public Component, public sensor::Sensor {};
 class BinarySensor : public Component, public binary_sensor::BinarySensor {};
@@ -86,6 +87,7 @@ class Kld7 : public Component, public uart::UARTDevice {
   void _process_detection();
   void _finish_processing();
   unsigned long long _last_request = 0;
+  void _request_data();
 };
 
 }  // namespace kld7
