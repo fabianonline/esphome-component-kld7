@@ -32,6 +32,7 @@ class Kld7 : public Component, public uart::UARTDevice {
   void register_points_sensor(sensor::Sensor* sensor) { this->_points_sensor = sensor; }
   void register_raw_angle_sensor(sensor::Sensor* sensor) { this->_raw_angle_sensor = sensor; }
   void register_raw_distance_sensor(sensor::Sensor* sensor) { this->_raw_distance_sensor = sensor; }
+  void register_raw_magnitude_sensor(sensor::Sensor* sensor) { this->_raw_magnitude_sensor = sensor; }
 
   void register_raw_detection_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_detection_sensor = sensor; };
   void register_raw_direction_sensor(binary_sensor::BinarySensor* sensor) { this->_raw_direction_sensor = sensor; };
@@ -61,6 +62,7 @@ class Kld7 : public Component, public uart::UARTDevice {
   sensor::Sensor* _points_sensor = NULL;
   sensor::Sensor* _raw_angle_sensor = NULL;
   sensor::Sensor* _raw_distance_sensor = NULL;
+  sensor::Sensor* _raw_magnitude_sensor = NULL;
   uint16_t _filtered_sensor_min_distance = 0;
   uint16_t _filtered_sensor_max_distance = 3000;
   float _filtered_sensor_min_angle = -90.0;

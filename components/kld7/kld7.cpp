@@ -106,6 +106,7 @@ void Kld7::loop() {
 				if (_raw_speed_sensor != NULL) _raw_speed_sensor->publish_state(_last_raw.speed);
 				if (_raw_angle_sensor != NULL) _raw_angle_sensor->publish_state(_last_raw.angle);
 				if (_raw_distance_sensor != NULL) _raw_distance_sensor->publish_state(_last_raw.distance);
+				if (_raw_magnitude_sensor != NULL) _raw_magnitude_sensor->publish_state(_last_raw.magnitude);
 				if (_raw_direction_sensor != NULL) _raw_direction_sensor->publish_state(_last_raw.speed > 0);
 				if (_raw_json_sensor != NULL) {
 					char buff[64];

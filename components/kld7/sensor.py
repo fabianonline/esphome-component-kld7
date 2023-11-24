@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (CONF_ID, CONF_TYPE, UNIT_KILOMETER_PER_HOUR, STATE_CLASS_MEASUREMENT, UNIT_DEGREES, UNIT_CENTIMETER,
-	DEVICE_CLASS_DISTANCE, DEVICE_CLASS_SPEED)
+	DEVICE_CLASS_DISTANCE, DEVICE_CLASS_SPEED, UNIT_DECIBEL, DEVICE_CLASS_IRRADIANCE)
 
 from . import CONF_KLD7_ID, kld7_ns, Kld7
 
@@ -13,6 +13,7 @@ CONF_TYPE_AVG_SPEED = "avg_speed"
 CONF_TYPE_POINTS = "points"
 CONF_TYPE_RAW_ANGLE = "raw_angle"
 CONF_TYPE_RAW_DISTANCE = "raw_distance"
+CONF_TYPE_RAW_MAGNITUDE = "raw_magnitude"
 
 Kld7Sensor = kld7_ns.class_("Sensor", sensor.Sensor, cg.Component)
 
@@ -53,6 +54,12 @@ CONFIG_SCHEMA = sensor.sensor_schema().extend(
             state_class=STATE_CLASS_MEASUREMENT,
             unit_of_measurement=UNIT_CENTIMETER,
             device_class=DEVICE_CLASS_DISTANCE
+		),
+        cv.Optional(CONF_TYPE_RAW_MAGNITUDE): sensor.sensor_schema(
+            accuracy_decimals=1,
+            state_class=STATE_CLASS_MEASUREMENT,
+            unit_of_measurement=UNIT_DECIBEL,
+            device_class=DEVICE_CLASS_IRRADIANCE
 		)
     }
 )
@@ -83,3 +90,6 @@ async def to_code(config):
     if sensor_config := config.get(CONF_TYPE_RAW_DISTANCE):
         sens = await sensor.new_sensor(sensor_config)
         cg.add(kld7.register_raw_distance_sensor(sens))
+    if sensor_config := config.get(CONF_TYPE_RAW_MAGNITUDE):
+        sens = await sensor.new_sensor(sensor_config)
+        cg.add(kld7.register_raw_magnitude_sensor(sens))
