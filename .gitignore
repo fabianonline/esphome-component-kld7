@@ -1,4 +1,6 @@
 *
+!components
+components/*
+!components/kld7
 !.gitignore
 !README.md
-!components/kld7

@@ -12,7 +12,7 @@ The whole config needed to use this component looks somewhat like this:
 ```yaml
 external_components:
   - source: github://fabianonline/esphome-component-kld7@main
-    components: [ rtttl ]
+    components: [ kld7 ]
 
 uart:
   id: uart_bus
