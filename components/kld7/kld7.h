@@ -12,7 +12,7 @@
 namespace esphome {
 namespace kld7 {
 
-const int DETECTION_TIMEOUT = 1000;
+const int DETECTION_TIMEOUT = 1500;
 const float DETECTION_SPEED_DIFFERENCE = 20.0;
 const uint16_t DETECTION_DISTANCE_DIFFERENCE = 1000;
 const int PROCESS_MIN_POINTS = 5;
