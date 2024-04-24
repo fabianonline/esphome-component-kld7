@@ -6,6 +6,13 @@ namespace kld7 {
 	
 static const char* TAG = "KLD7";
 
+const char* PROCESSING_REASON_OBJECT_GONE = "object gone";
+const char* PROCESSING_REASON_TIME_OVERFLOW = "time overflow";
+const char* PROCESSING_REASON_TIMEOUT = "timeout";
+const char* PROCESSING_REASON_DIRECTION_CHANGE = "direction changed";
+const char* PROCESSING_REASON_SPEED_DIFFERENCE = "speed difference";
+const char* PROCESSING_REASON_DISTANCE_DIFFERENCE = "distance difference";
+
 void Kld7::setup() {
 	ESP_LOGI(TAG, "Starting initialization of K-LD7...");
 	ESP_LOGD(TAG, "Sending INIT");
