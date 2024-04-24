@@ -19,6 +19,13 @@ const int PROCESS_MIN_POINTS = 5;
 const int REQUEST_INTERVAL = 50;
 const int TIMEOUT_INTERVAL = 500;
 
+const char* PROCESSING_REASON_OBJECT_GONE = "object gone";
+const char* PROCESSING_REASON_TIME_OVERFLOW = "time overflow";
+const char* PROCESSING_REASON_TIMEOUT = "timeout";
+const char* PROCESSING_REASON_DIRECTION_CHANGE = "direction changed";
+const char* PROCESSING_REASON_SPEED_DIFFERENCE = "speed difference";
+const char* PROCESSING_REASON_DISTANCE_DIFFERENCE = "distance difference";
+
 class Sensor : public Component, public sensor::Sensor {};
 class BinarySensor : public Component, public binary_sensor::BinarySensor {};
 class TextSensor : public Component, public text_sensor::TextSensor {};
@@ -88,7 +95,7 @@ class Kld7 : public Component, public uart::UARTDevice {
   bool _wait_for_ok();
   bool _waiting_for_data = false;
   void _process_detection();
-  void _finish_processing();
+  void _finish_processing(const char* reason);
   unsigned long long _last_request = 0;
   void _request_data();
 };

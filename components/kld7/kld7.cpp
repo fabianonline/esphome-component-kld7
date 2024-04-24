@@ -147,16 +147,20 @@ void Kld7::_process_detection() {
 	if (_last_raw.detection == false) {
 		if (_current_process.active && (_current_process.timestamp + DETECTION_TIMEOUT < millis() || _current_process.timestamp > millis())) {
 			// Object is gone. Stop processing.
-			_finish_processing();
+			_finish_processing(PROCESSING_REASON_OBJECT_GONE);
 		}
 	} else {
 		bool direction_away_from_radar = _last_raw.speed > 0;
-		if (_current_process.timestamp > millis() || millis() - _current_process.timestamp > DETECTION_TIMEOUT ||
-			direction_away_from_radar != _current_process.direction_away_from_radar ||
-			fabs(_last_raw.speed - _current_process.last_speed)>DETECTION_SPEED_DIFFERENCE ||
-			abs(_last_raw.distance - _current_process.last_distance)>DETECTION_DISTANCE_DIFFERENCE) {
-			// Finish detection and start a new one
-			_finish_processing();
+		if (_current_process.timestamp > millis()) {
+			_finish_processing(PROCESSING_REASON_TIME_OVERFLOW);
+		} else if (millis() - _current_process.timestamp > DETECTION_TIMEOUT) {
+			_finish_processing(PROCESSING_REASON_TIMEOUT);
+		} else if (direction_away_from_radar != _current_process.direction_away_from_radar) {
+			_finish_processing(PROCESSING_REASON_DIRECTION_CHANGE);
+		} else if (fabs(_last_raw.speed - _current_process.last_speed)>DETECTION_SPEED_DIFFERENCE) {
+			_finish_processing(PROCESSING_REASON_SPEED_DIFFERENCE);
+		} else if (abs(_last_raw.distance - _current_process.last_distance)>DETECTION_DISTANCE_DIFFERENCE) {
+			_finish_processing(PROCESSING_REASON_DISTANCE_DIFFERENCE);
 		}
 
 		// TODO save the data
@@ -178,7 +182,7 @@ void Kld7::_process_detection() {
 	_previous_raw = _last_raw;
 }
 
-void Kld7::_finish_processing() {
+void Kld7::_finish_processing(const char* reason) {
 	_current_process.active = false;
 	if (_current_process.points > PROCESS_MIN_POINTS) {
 		float avg_speed = _current_process.speed_sum / _current_process.points;
@@ -187,13 +191,13 @@ void Kld7::_finish_processing() {
 		if (_speed_sensor != NULL) _speed_sensor->publish_state(_current_process.not_max_speed);
 		if (_detection_sensor != NULL) _detection_sensor->publish_state(true);
 		if (_json_sensor != NULL) {
-			char buffer[64];
-			snprintf(buffer, sizeof(buffer), "{\"speed\":%.1f,\"avg_speed\":%.1f,\"points\":%d}", _current_process.not_max_speed, avg_speed, _current_process.points);
+			char buffer[92];
+			snprintf(buffer, sizeof(buffer), "{\"speed\":%.1f,\"avg_speed\":%.1f,\"points\":%d,\"reason\":\"%s\"}", _current_process.not_max_speed, avg_speed, _current_process.points, reason);
 			_json_sensor->publish_state(buffer);
 		}
-		ESP_LOGD(TAG, "_finish_processing. %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
+		ESP_LOGD(TAG, "_finish_processing (%s). %d points, maximum %f.1 km/h, average %f.1 km/h, direction_away_from_radar %d", reason, _current_process.points, _current_process.not_max_speed, avg_speed, _current_process.direction_away_from_radar ? 1 : 0);
 	} else {
-		ESP_LOGD(TAG, "_finish_processing: Too little data. Ignoring event.");
+		ESP_LOGD(TAG, "_finish_processing (%s): Too little data. Ignoring event.", reason);
 	}
 	_current_process = ProcessedRadarEvent();
 	if (_detection_sensor != NULL) _detection_sensor->publish_state(false);
